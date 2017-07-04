@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5FC1B6D21F0B5E5B0074BF92 /* placeholder.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 5FC1B6D11F0B5E5B0074BF92 /* placeholder.jpg */; };
 		94E12C1F1BF97E8F00DA2010 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E12C1E1BF97E8F00DA2010 /* AppDelegate.swift */; };
 		94E12C211BF97E8F00DA2010 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E12C201BF97E8F00DA2010 /* ViewController.swift */; };
 		94E12C241BF97E8F00DA2010 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 94E12C221BF97E8F00DA2010 /* Main.storyboard */; };
@@ -36,6 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5FC1B6D11F0B5E5B0074BF92 /* placeholder.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = placeholder.jpg; sourceTree = "<group>"; };
 		94E12C1B1BF97E8F00DA2010 /* GooeyTabbar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GooeyTabbar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94E12C1E1BF97E8F00DA2010 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		94E12C201BF97E8F00DA2010 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -101,6 +103,7 @@
 		94E12C1D1BF97E8F00DA2010 /* GooeyTabbar */ = {
 			isa = PBXGroup;
 			children = (
+				5FC1B6D11F0B5E5B0074BF92 /* placeholder.jpg */,
 				94E12C1E1BF97E8F00DA2010 /* AppDelegate.swift */,
 				94E12C201BF97E8F00DA2010 /* ViewController.swift */,
 				94E12C4C1BF9A8E500DA2010 /* TabbarMenu.swift */,
@@ -239,6 +242,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				94E12C291BF97E8F00DA2010 /* LaunchScreen.storyboard in Resources */,
+				5FC1B6D21F0B5E5B0074BF92 /* placeholder.jpg in Resources */,
 				94E12C261BF97E8F00DA2010 /* Assets.xcassets in Resources */,
 				94E12C241BF97E8F00DA2010 /* Main.storyboard in Resources */,
 			);

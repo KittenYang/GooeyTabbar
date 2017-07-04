@@ -17,18 +17,8 @@ class ViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        
-        menu = TabbarMenu(tabbarHeight: 40.0)
-        
+        menu = TabbarMenu(texture: .withBlur(blurStyle: .dark) ,tabbarHeight: 40.0, toTop: 200)
     }
-    
-    
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
     
 }
 
