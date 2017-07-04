@@ -78,10 +78,10 @@ class TabbarMenu: UIView {
             addSubview(backgroundBlurView)
             var dimmingStyle: UIBlurEffectStyle
             switch blurStyle {
-            case .light:
-                dimmingStyle = .dark
-            default:
+            case .dark:
                 dimmingStyle = .light
+            default:
+                dimmingStyle = .dark
             }
             backDimmingView.effect = UIBlurEffect(style: dimmingStyle)
         case .withColor(let color):
