@@ -13,7 +13,7 @@ enum MenuTextureType {
     case withBlur(blurStyle: UIBlurEffectStyle)
 }
 
-class TabbarMenu: UIView{
+class TabbarMenu: UIView {
     
     /// 是否打开
     var opened : Bool = false
@@ -21,7 +21,7 @@ class TabbarMenu: UIView{
     fileprivate var normalRect : UIView!
     fileprivate var springRect : UIView!
     fileprivate var keyWindow  : UIWindow!
-    fileprivate var blurView   : UIVisualEffectView!
+    fileprivate weak var backDimmingView: UIVisualEffectView!
     fileprivate var displayLink : CADisplayLink!
     fileprivate var animationCount : Int = 0
     fileprivate var diff : CGFloat = 0
@@ -64,26 +64,35 @@ class TabbarMenu: UIView{
     {
         keyWindow = UIApplication.shared.keyWindow
         
-        blurView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
-        blurView.frame = self.bounds
-        blurView.alpha = 0.0
-        keyWindow.addSubview(blurView)
+        let dimmingView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        dimmingView.frame = self.bounds
+        dimmingView.alpha = 0.0
+        keyWindow.addSubview(dimmingView)
+        backDimmingView = dimmingView
+        
+        switch textureType {
+        case .withBlur(let blurStyle):
+            self.backgroundColor = UIColor.clear
+            let backgroundBlurView = UIVisualEffectView(effect: UIBlurEffect(style: blurStyle))
+            backgroundBlurView.frame = self.bounds
+            addSubview(backgroundBlurView)
+            var dimmingStyle: UIBlurEffectStyle
+            switch blurStyle {
+            case .light:
+                dimmingStyle = .dark
+            default:
+                dimmingStyle = .light
+            }
+            backDimmingView.effect = UIBlurEffect(style: dimmingStyle)
+        case .withColor(let color):
+            self.backgroundColor = color
+        }
         
         bouncyMask = CAShapeLayer()
         bouncyMask?.frame = bounds
         layer.mask = bouncyMask
         updateMask()
         keyWindow.addSubview(self)
-        
-        switch textureType {
-        case .withBlur(let blurStyle):
-            self.backgroundColor = UIColor.clear
-            let darkBlurView = UIVisualEffectView(effect: UIBlurEffect(style: blurStyle))
-            darkBlurView.frame = self.bounds
-            addSubview(darkBlurView)
-        case .withColor(let color):
-            self.backgroundColor = color
-        }
         
         normalRect = UIView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height - 30 - 50, width: 30, height: 30))
         normalRect.backgroundColor = UIColor.blue
@@ -97,36 +106,35 @@ class TabbarMenu: UIView{
         
         animateButton = AnimatedButton(frame: CGRect(x: 0, y: topSpace + (tabbarheight! - 30)/2, width: 50, height: 30))
         self.addSubview(animateButton!)
-        animateButton!.didTapped = { (button) -> () in
-            self.triggerAction()
+        animateButton!.didTapped = { [weak self] (button) -> () in
+            if let strongSelf = self {
+                strongSelf.triggerAction()
+            }
         }
         
     }
     
     func triggerAction()
-    {
-        if animateButton!.animating {
-            return
-        }
-        
+    {        
         /**
          *  展开
          */
         if !opened {
+            animateButton!.switchToOpenMode()
             opened = true
-            startAnimation()
+            animationWillBegin()
             UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseOut, animations: { () -> Void in
                 self.springRect.center = CGPoint(x: self.springRect.center.x, y: self.springRect.center.y - 40)
             }) { (finish) -> Void in
                 UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseOut, animations: { () -> Void in
                     self.normalRect.center = CGPoint(x: self.normalRect.center.x, y: 100)
-                    self.blurView.alpha = 1.0
+                    self.backDimmingView.alpha = 1.0
                 }, completion: nil)
                 
                 UIView.animate(withDuration: 1.0, delay: 0.0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.0, options: .curveEaseOut, animations: { () -> Void in
                     self.springRect.center = CGPoint(x: self.springRect.center.x, y: 100)
                 }, completion: { (finish) -> Void in
-                    self.finishAnimation()
+                    self.animationDidDone()
                 })
             }
             UIView.animate(withDuration: 0.3, delay: 0.14, options: .curveEaseOut, animations: { () -> Void in
@@ -137,16 +145,19 @@ class TabbarMenu: UIView{
             /**
              *  收缩
              */
+            animateButton!.switchToCloseMode()
             opened = false
-            startAnimation()
+            animationWillBegin()
             UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseOut, animations: { () -> Void in
                 self.frame = self.initialFrame!
                 }, completion: nil)
             
             UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseOut, animations: { () -> Void in
                 self.normalRect.center = CGPoint(x: self.normalRect.center.x, y: UIScreen.main.bounds.size.height - 30 - 50)
-                self.blurView.alpha = 0.0
-                }, completion: nil)
+                self.backDimmingView.alpha = 0.0
+            }, completion: { (finished) in
+                self.backDimmingView.removeFromSuperview()
+            })
             
             UIView.animate(withDuration: 0.25, delay:0.0, options: .curveEaseOut, animations: { () -> Void in
                 self.springRect.center = CGPoint(x: self.springRect.center.x, y: UIScreen.main.bounds.size.height - 30 - 50 + 10)
@@ -157,7 +168,8 @@ class TabbarMenu: UIView{
                             UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseOut, animations: { () -> Void in
                                 self.springRect.center = CGPoint(x: self.springRect.center.x, y: UIScreen.main.bounds.size.height - 30 - 50)
                                 }, completion: { (finish) -> Void in
-                                    self.finishAnimation()
+                                    self.animationDidDone()
+//                                    self.removeFromSuperview()
                             })
                     })
             })
@@ -179,7 +191,7 @@ class TabbarMenu: UIView{
         updateMask()
     }
     
-    fileprivate func startAnimation()
+    fileprivate func animationWillBegin()
     {
         if displayLink == nil
         {
@@ -189,7 +201,7 @@ class TabbarMenu: UIView{
         animationCount += 1
     }
     
-    fileprivate func finishAnimation()
+    fileprivate func animationDidDone()
     {
         animationCount -= 1
         if animationCount == 0

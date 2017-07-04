@@ -20,7 +20,7 @@ class AnimatedButton: UIButton {
     var animating : Bool = false
     
     /// 是否打开
-    fileprivate var opened : Bool = false
+    var opened : Bool = false
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -45,7 +45,7 @@ class AnimatedButton: UIButton {
         setLineSetting(secondLine)
         self.layer.addSublayer(secondLine)
         
-        self.addTarget(self, action: #selector(AnimatedButton.animate as (AnimatedButton) -> () -> ()), for: .touchUpInside)
+        self.addTarget(self, action: #selector(AnimatedButton.animate(_:)), for: .touchUpInside)
     }
     
     
@@ -54,14 +54,24 @@ class AnimatedButton: UIButton {
         line.cornerRadius = line.frame.height / 2
     }
     
-    
-    @objc fileprivate func animate() {
-        
-        if animating {
-            return
+    func switchToOpenMode() {
+        if !self.opened {
+            animation()
         }
-        
+    }
+    
+    func switchToCloseMode() {
+        if self.opened {
+            animation()
+        }
+    }
+    
+    @objc fileprivate func animate(_ button: UIButton) {
+        animation()
         didTapped?(self)
+    }
+    
+    fileprivate func animation() {
         animating = true
         if !opened {
             opened = true
@@ -83,12 +93,12 @@ class AnimatedButton: UIButton {
             moveDown.isRemovedOnCompletion = false
             firstLine.add(moveDown, forKey: "moveDown_1")
             
-        }else{
+        } else {
             opened = false
             
             let rotation_second = CAKeyframeAnimation(keyPath: "transform.rotation.z")
             rotation_second.duration = 0.3
-            rotation_second.values = [45 * (M_PI/180),70 * (M_PI/180),0]
+            rotation_second.values = [45 * (CGFloat.pi/180),70 * (CGFloat.pi/180),0]
             rotation_second.keyTimes = [0.0,0.4,1.0]
             rotation_second.fillMode = kCAFillModeForwards
             rotation_second.isRemovedOnCompletion = false
@@ -97,15 +107,13 @@ class AnimatedButton: UIButton {
             
             let rotation_first = CAKeyframeAnimation(keyPath: "transform.rotation.z")
             rotation_first.duration = 0.4
-            rotation_first.values = [135 * (M_PI/180),170 * (M_PI/180),0]
+            rotation_first.values = [135 * (CGFloat.pi/180),170 * (CGFloat.pi/180),0]
             rotation_first.keyTimes = [0.0,0.4,1.0]
             rotation_first.fillMode = kCAFillModeForwards
             rotation_first.isRemovedOnCompletion = false
             rotation_first.delegate = self
             firstLine.add(rotation_first, forKey: "rotation_first_close")
-            
         }
-        
     }
     
 }
@@ -115,29 +123,26 @@ extension AnimatedButton: CAAnimationDelegate {
     
     func animationDidStart(_ anim: CAAnimation) {
         
-        
     }
     
     func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
         if anim == secondLine.animation(forKey: "moveUp_2") {
             let rotation_second = CAKeyframeAnimation(keyPath: "transform.rotation.z")
             rotation_second.duration = 0.5
-            rotation_second.values = [0,70 * (M_PI/180),45 * (M_PI/180)]
+            rotation_second.values = [0,70 * (CGFloat.pi/180),45 * (CGFloat.pi/180)]
             rotation_second.keyTimes = [0.0,0.6,1.0]
             rotation_second.fillMode = kCAFillModeForwards
             rotation_second.isRemovedOnCompletion = false
             secondLine.add(rotation_second, forKey: "rotation_second_open")
-            
         }else if anim == firstLine.animation(forKey: "moveDown_1") {
             let rotation_first = CAKeyframeAnimation(keyPath: "transform.rotation.z")
             rotation_first.duration = 0.6
-            rotation_first.values = [0,170 * (M_PI/180),135 * (M_PI/180)]
+            rotation_first.values = [0,170 * (CGFloat.pi/180),135 * (CGFloat.pi/180)]
             rotation_first.keyTimes = [0.0,0.6,1.0]
             rotation_first.fillMode = kCAFillModeForwards
             rotation_first.isRemovedOnCompletion = false
             rotation_first.delegate = self
             firstLine.add(rotation_first, forKey: "rotation_first_open")
-            
         }else if anim == secondLine.animation(forKey: "rotation_second_close") {
             let moveUp = CABasicAnimation(keyPath: "transform.translation.y")
             moveUp.duration = 0.2
@@ -147,7 +152,6 @@ extension AnimatedButton: CAAnimationDelegate {
             moveUp.fillMode = kCAFillModeForwards
             moveUp.isRemovedOnCompletion = false
             secondLine.add(moveUp, forKey: "moveDown_2")
-            
         }else if anim == firstLine.animation(forKey: "rotation_first_close") {
             let moveDown = CABasicAnimation(keyPath: "transform.translation.y")
             moveDown.duration = 0.2
@@ -157,7 +161,6 @@ extension AnimatedButton: CAAnimationDelegate {
             moveDown.fillMode = kCAFillModeForwards
             moveDown.isRemovedOnCompletion = false
             firstLine.add(moveDown, forKey: "moveUp_1")
-            
         }
         
         if anim == firstLine.animation(forKey: "rotation_first_open")  || anim == firstLine.animation(forKey: "moveUp_1"){
@@ -166,6 +169,3 @@ extension AnimatedButton: CAAnimationDelegate {
     }
     
 }
-
-
-
