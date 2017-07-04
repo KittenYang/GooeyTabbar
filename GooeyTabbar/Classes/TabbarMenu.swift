@@ -32,7 +32,7 @@ class TabbarMenu: UIView {
     fileprivate var textureType: MenuTextureType = .withColor(color: UIColor(colorLiteralRed: 50/255.0, green: 58/255.0, blue: 68/255.0, alpha: 1.0))
     
     var topSpace : CGFloat = 64.0 //留白
-    fileprivate var tabbarheight : CGFloat? //tabbar高度
+    fileprivate var tabbarheight : CGFloat = 0.0 //tabbar高度
     
     init(texture: MenuTextureType, tabbarHeight : CGFloat, toTop: CGFloat)
     {
@@ -104,7 +104,7 @@ class TabbarMenu: UIView {
         springRect.isHidden = true
         keyWindow.addSubview(springRect)
         
-        animateButton = AnimatedButton(frame: CGRect(x: 0, y: topSpace + (tabbarheight! - 30)/2, width: 50, height: 30))
+        animateButton = AnimatedButton(frame: CGRect(x: 0, y: topSpace + max(5, (tabbarheight - 30)/2), width: 50, height: 30))
         self.addSubview(animateButton!)
         animateButton!.didTapped = { [weak self] (button) -> () in
             if let strongSelf = self {
