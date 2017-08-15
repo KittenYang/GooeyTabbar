@@ -83,7 +83,7 @@ class TabbarMenu: UIView {
             default:
                 dimmingStyle = .dark
             }
-            backDimmingView.effect = UIBlurEffect(style: dimmingStyle)
+            backDimmingView?.effect = UIBlurEffect(style: dimmingStyle)
         case .withColor(let color):
             self.backgroundColor = color
         }
@@ -128,7 +128,7 @@ class TabbarMenu: UIView {
             }) { (finish) -> Void in
                 UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseOut, animations: { () -> Void in
                     self.normalRect.center = CGPoint(x: self.normalRect.center.x, y: 100)
-                    self.backDimmingView.alpha = 1.0
+                    self.backDimmingView?.alpha = 1.0
                 }, completion: nil)
                 
                 UIView.animate(withDuration: 1.0, delay: 0.0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.0, options: .curveEaseOut, animations: { () -> Void in
@@ -154,9 +154,9 @@ class TabbarMenu: UIView {
             
             UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseOut, animations: { () -> Void in
                 self.normalRect.center = CGPoint(x: self.normalRect.center.x, y: UIScreen.main.bounds.size.height - 30 - 50)
-                self.backDimmingView.alpha = 0.0
+                self.backDimmingView?.alpha = 0.0
             }, completion: { (finished) in
-                self.backDimmingView.removeFromSuperview()
+                self.backDimmingView?.removeFromSuperview()
             })
             
             UIView.animate(withDuration: 0.25, delay:0.0, options: .curveEaseOut, animations: { () -> Void in
